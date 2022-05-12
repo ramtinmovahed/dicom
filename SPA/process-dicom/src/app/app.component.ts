@@ -39,8 +39,7 @@ export class AppComponent {
       const formData = new FormData();
       formData.append("File", this.file);
 
-      // const upload$ = this.http.post("https://process-dicom.azurewebsites.net/api/HttpTrigger", formData, {
-      const upload$ = this.http.post("http://localhost:7071/api/HttpTrigger", formData, {
+      const upload$ = this.http.post("https://process-dicom.azurewebsites.net/api/HttpTrigger", formData, {
         reportProgress: true,
         observe: 'events',
         responseType: 'arraybuffer'
