@@ -46,7 +46,7 @@ export class AppComponent {
 
       const formData = new FormData();
       formData.append("File", this.file);
-      this.openSnackBar('uploading...', 3000);
+      this._snackBar.open('uploading...');
       const upload$ = this.http.post("https://process-dicom.azurewebsites.net/api/HttpTrigger", formData, {
         reportProgress: true,
         observe: 'events',
@@ -55,7 +55,6 @@ export class AppComponent {
         .pipe(
           finalize(() => {
             this.reset();
-            this._snackBar.open('uploaded, waiting');
           })
         )
 
