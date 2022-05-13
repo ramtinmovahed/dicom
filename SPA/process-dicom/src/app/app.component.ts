@@ -55,6 +55,7 @@ export class AppComponent {
         .pipe(
           finalize(() => {
             this.reset();
+            this._snackBar.open('uploaded, waiting');
           })
         )
 
