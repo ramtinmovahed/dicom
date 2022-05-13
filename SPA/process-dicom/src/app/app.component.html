@@ -1,5 +1,3 @@
-<mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
-</mat-progress-bar>
 <mat-toolbar color="primary">
   <span>Process Dicom by Ramtin Movahed Rad</span>
 </mat-toolbar>
@@ -9,14 +7,10 @@
 <div class="container">
   <div class="progress">
 
-
-
-    <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
-
   </div>
   <input type="file" class="file-input" [accept]="requiredFileType" (change)="onFileSelected($event)" #fileUpload>
   <div class="file-upload">
-    <p class="">
+    <p class="file-upload-text" (click)="fileUpload.click()">
       {{fileName || "No file uploaded yet."}}
     </p>
     <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">

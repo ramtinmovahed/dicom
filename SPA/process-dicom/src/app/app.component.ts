@@ -1,5 +1,6 @@
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -17,7 +18,7 @@ export class AppComponent {
   uploadSub: Subscription | null = Subscription.EMPTY;
   file: File | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private _snackBar: MatSnackBar) { }
 
   onFileSelected(event: any) {
     this.file = event.target.files[0];
@@ -29,6 +30,13 @@ export class AppComponent {
     this.reset();
   }
 
+  openSnackBar(message: string, duration: number = 2000) {
+    this._snackBar.open(message, '', { duration });
+  }
+
+  lines: any = [];
+  linesR: any = [];
+
   reset() {
     this.uploadProgress = null;
     this.uploadSub = null;
@@ -38,24 +46,31 @@ export class AppComponent {
 
       const formData = new FormData();
       formData.append("File", this.file);
-
+      this.openSnackBar('uploading...', 3000);
       const upload$ = this.http.post("https://process-dicom.azurewebsites.net/api/HttpTrigger", formData, {
         reportProgress: true,
         observe: 'events',
         responseType: 'arraybuffer'
       })
         .pipe(
-          finalize(() => this.reset())
-        );
+          finalize(() => {
+            this.reset();
+          })
+        )
 
       this.uploadSub = upload$.subscribe((event: any) => {
-        if (event.type == HttpEventType.UploadProgress) {
-          this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+        if (event.type == HttpEventType.Response) {
+          let ref = this._snackBar.open("File processed", 'download');
+          console.log(ref)
+          ref.onAction().subscribe(() => {
+            this.downLoadFile(event.body, 'application/csv');
+            ref.dismiss();
+          });
         }
-        else if (event.type == HttpEventType.Response) {
-          this.downLoadFile(event.body, 'application/csv');
-        }
-      })
+      }, (err) => {
+        this.openSnackBar('upload failed, please check your file', 3000);
+        this.reset();
+      });
     }
   }
 
